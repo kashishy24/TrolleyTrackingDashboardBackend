@@ -6,125 +6,152 @@ const sql = require("mssql");
 
 const router = express.Router();
 
-//  Plant OEE API
-router.get("/plantOEE", async (req, res) => {
+
+//Mould PM Plan Vs Actual
+
+
+router.get("/mouldPMPlannedVsActual", async (req, res) => {
   try {
-    const { mode, startDate, endDate } = req.query;
+    const { filterType, startDate, endDate } = req.query;
 
-    // Connect to DB
+    if (!filterType) {
+      return res.status(400).json({
+        success: false,
+        message: "filterType parameter is required",
+      });
+    }
+
     const pool = await sql.connect();
+    const request = pool.request();
 
-    // Call stored procedure
-    const result = await pool
-      .request()
-      .input("Mode", sql.VarChar(20), mode || "SHIFT")  // default SHIFT
-      .input("StartDate", sql.Date, startDate || null)
-      .input("EndDate", sql.Date, endDate || null)
-      .execute("sp_Get_Plant_OEE");   // or sp_Get_Plant_OEE if that's the correct name
+    // Always send FilterType
+    request.input("FilterType", sql.Int, parseInt(filterType));
+
+    // When FilterType = 5, pass StartDate & EndDate
+    if (parseInt(filterType) === 5) {
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          success: false,
+          message: "StartDate & EndDate required when FilterType = 5",
+        });
+      }
+
+      request.input("StartDate", sql.Date, startDate);
+      request.input("EndDate", sql.Date, endDate);
+    } else {
+      request.input("StartDate", sql.Date, null);
+      request.input("EndDate", sql.Date, null);
+    }
+
+    const result = await request.execute("Dashboard_MouldPM_PlannedVsActual");
 
     res.json({
       success: true,
       data: result.recordset,
     });
+
   } catch (error) {
-    console.error("Error fetching plant OEE data:", error);
+    console.error("Error fetching PM Planned vs Actual:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching plant OEE data",
-      error: error.message,
-    });
-  }
-});
-
-//Get the Plan and actual qty acc to filter
-router.get("/GetPlanActualQty", async (req, res) => {
-  try {
-    const { mode, startDate, endDate } = req.query;
-
-    // Connect to DB
-    const pool = await sql.connect();
-
-    // Call stored procedure
-    const result = await pool
-      .request()
-      .input("Mode", sql.VarChar(20), mode || "SHIFT")  // default SHIFT
-      .input("StartDate", sql.Date, startDate || null)
-      .input("EndDate", sql.Date, endDate || null)
-      .execute("sp_Dashboard_Get_plan_ActualQty");   // or sp_Get_Plant_OEE if that's the correct name
-
-    res.json({
-      success: true,
-      data: result.recordset,
-    });
-  } catch (error) {
-    console.error("Error fetching plan Actual Qty data:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error fetching plan Actual Qty data",
+      message: "Error fetching PM Planned vs Actual",
       error: error.message,
     });
   }
 });
 
 
-//Get the Ok and Total qty acc to filter
-router.get("/GetOKTotalQty", async (req, res) => {
+//----PM Monitoring table
+router.get("/mouldPMStatus", async (req, res) => {
   try {
-    const { mode, startDate, endDate } = req.query;
+    const { caseType, startDate, endDate } = req.query;
 
-    // Connect to DB
+    if (!caseType) {
+      return res.status(400).json({
+        success: false,
+        message: "caseType parameter is required",
+      });
+    }
+
     const pool = await sql.connect();
 
-    // Call stored procedure
-    const result = await pool
-      .request()
-      .input("Mode", sql.VarChar(20), mode || "SHIFT")  // default SHIFT
-      .input("StartDate", sql.Date, startDate || null)
-      .input("EndDate", sql.Date, endDate || null)
-      .execute("sp_Dashboard_Get_OK_TotalQty");   // or sp_Get_Plant_OEE if that's the correct name
+    const request = pool.request();
+
+    // Always pass CaseType
+    request.input("CaseType", sql.Int, parseInt(caseType));
+
+    // Pass StartDate & EndDate ONLY when CaseType = 5
+    if (parseInt(caseType) === 5) {
+      request.input("StartDate", sql.Date, startDate || null);
+      request.input("EndDate", sql.Date, endDate || null);
+    } else {
+      request.input("StartDate", sql.Date, null);
+      request.input("EndDate", sql.Date, null);
+    }
+
+    const result = await request.execute("DASHBOARD_MouldPMStatusMonitoring");
 
     res.json({
       success: true,
       data: result.recordset,
     });
   } catch (error) {
-    console.error("Error fetching OK and Total Qty data:", error);
+    console.error("Error fetching mould PM status monitoring data:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching OK and Total  Qty data",
+      message: "Error fetching mould PM status monitoring data",
       error: error.message,
     });
   }
 });
 
-//plant Breakdown and idle details
+//-----------HC Monitoring table
 
-router.get("/plantDowntimeBreakdownDetails", async (req, res) => {
+router.get("/mouldHCStatus", async (req, res) => {
   try {
-    const { mode, startDate, endDate,  } = req.query;
+    const { caseType, startDate, endDate } = req.query;
 
-    // Run Stored Procedure
+    if (!caseType) {
+      return res.status(400).json({
+        success: false,
+        message: "caseType parameter is required",
+      });
+    }
+
     const pool = await sql.connect();
-    const result = await pool
-      .request()
-      .input("Mode", sql.VarChar(20), mode || "SHIFT")
-      .input("StartDate", sql.Date, startDate || null)
-      .input("EndDate", sql.Date, endDate || null)
-      .execute("sp_GetPlantTimes");
+
+    const request = pool.request();
+
+    // Always pass CaseType
+    request.input("CaseType", sql.Int, parseInt(caseType));
+
+    // Pass StartDate & EndDate ONLY when CaseType = 5
+    if (parseInt(caseType) === 5) {
+      request.input("StartDate", sql.Date, startDate || null);
+      request.input("EndDate", sql.Date, endDate || null);
+    } else {
+      request.input("StartDate", sql.Date, null);
+      request.input("EndDate", sql.Date, null);
+    }
+
+    const result = await request.execute("DASHBOARD_MouldHCStatusMonitoring");
 
     res.json({
       success: true,
       data: result.recordset,
     });
   } catch (error) {
-    console.error("Error fetching plant times Data:", error);
+    console.error("Error fetching mould HC status monitoring data:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching plant times data",
+      message: "Error fetching mould HC status monitoring data",
       error: error.message,
     });
   }
 });
+
+
+
 
 
 module.exports = router;
