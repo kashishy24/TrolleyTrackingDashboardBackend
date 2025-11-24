@@ -31,7 +31,7 @@ app.use("/api/login", loginRoute);
 // app.use("/api/MachineParameter",ParameterRoute );
 // app.use("/api/MachineAlarm",AlarmRoute );
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
 });

@@ -254,4 +254,49 @@ router.get("/Top5BreakdownByOccurrences", async (req, res) => {
   }
 });
 
+
+//API for spare part Monitoring
+
+router.get("/SparePartMonitoring", async (req, res) => {
+  try {
+    const { caseType, startDate, endDate } = req.query;
+
+    if (!caseType) {
+      return res.status(400).json({
+        success: false,
+        message: "caseType parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+
+    const request = pool.request();
+
+    // Always pass CaseType
+    request.input("CaseType", sql.Int, parseInt(caseType));
+
+    // Pass StartDate & EndDate ONLY when CaseType = 5
+    if (parseInt(caseType) === 5) {
+      request.input("StartDate", sql.Date, startDate || null);
+      request.input("EndDate", sql.Date, endDate || null);
+    } else {
+      request.input("StartDate", sql.Date, null);
+      request.input("EndDate", sql.Date, null);
+    }
+
+    const result = await request.execute("DASHBOARD_MouldSparePartStatusMonitoring");
+
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error fetching mould spare part monitoring data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching mould spare part monitoring data",
+      error: error.message,
+    });
+  }
+});
 module.exports = router;
