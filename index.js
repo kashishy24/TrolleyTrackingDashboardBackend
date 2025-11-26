@@ -9,6 +9,9 @@ const hcRoute=require("./src/Controllers/MouldMaintenanceHistory/HC.js")
 const breakdownRoute=require("./src/Controllers/MouldMaintenanceHistory/Breakdown.js")
 const SparePartRoute=require("./src/Controllers/MouldMaintenanceHistory/SparePart.js")
 const pmStatusRoute=require("./src/Controllers/PM Status/PMStatus.js")
+const hcStatusRoute=require("./src/Controllers/HCStatus/HCStatus.js")
+
+
 const app = express();
 
 
@@ -33,7 +36,7 @@ app.use("/api/MouldMaintenanceHistoryhc",hcRoute );
 app.use("/api/MouldMaintenanceHistoryBreakdownCalDetails",breakdownRoute );
 app.use("/api/MouldMaintenanceHistorySparePart",SparePartRoute );
 app.use("/api/PMStatus",pmStatusRoute );
-
+app.use("/api/HCStatus",hcStatusRoute );
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
