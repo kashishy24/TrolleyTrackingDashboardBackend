@@ -299,4 +299,38 @@ router.get("/SparePartMonitoring", async (req, res) => {
     });
   }
 });
+
+
+router.get("/PmPlannedVsActualCustom", async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // Send parameters ONLY if provided, otherwise NULL
+    request.input("StartDate", sql.Date, startDate || null);
+    request.input("EndDate", sql.Date, endDate || null);
+
+    // Execute the stored procedure
+    const result = await request.execute(
+      "Dashboard_MouldPM_PlannedVsActualCustomeDate"
+    );
+
+    return res.json({
+      success: true,
+      data: result.recordset,
+    });
+
+  } catch (error) {
+    console.error("Error executing Dashboard_MouldPM_PlannedVsActualCustomeDate:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching PM Planned vs Actual (Custom Date)",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;

@@ -4,8 +4,10 @@ const rateLimit = require("express-rate-limit");  //  add this
 const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
 const HomeRoute=require("./src/Controllers/HomePage/Home.js")
-
-
+const PMRoute=require("./src/Controllers/MouldMaintenanceHistory/PM.js")
+const hcRoute=require("./src/Controllers/MouldMaintenanceHistory/HC.js")
+const breakdownRoute=require("./src/Controllers/MouldMaintenanceHistory/Breakdown.js")
+const SparePartRoute=require("./src/Controllers/MouldMaintenanceHistory/SparePart.js")
 const app = express();
 
 
@@ -23,14 +25,12 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/api/login", loginRoute);
-// app.use("/api/PerfMachine", machineWiseDataRoute);
- app.use("/api/Home",HomeRoute );
-// app.use("/api/PerformanceHome",PerformanceHomeRoute );
-// app.use("/api/DowntimeHome",DowntimeHomeRoute );
-// app.use("/api/DowntimeMachine",DowntimeMachineRoute );
-// app.use("/api/MachineParameter",ParameterRoute );
-// app.use("/api/MachineAlarm",AlarmRoute );
 
+ app.use("/api/Home",HomeRoute );
+app.use("/api/MouldMaintenanceHistoryPM",PMRoute );
+app.use("/api/MouldMaintenanceHistoryhc",hcRoute );
+app.use("/api/MouldMaintenanceHistoryBreakdownCalDetails",breakdownRoute );
+app.use("/api/MouldMaintenanceHistorySparePart",SparePartRoute );
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
