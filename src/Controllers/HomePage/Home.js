@@ -105,6 +105,57 @@ router.get("/mouldPMStatus", async (req, res) => {
   }
 });
 
+//Mould HC Plan Vs Actual
+router.get("/mouldHCPlannedVsActual", async (req, res) => {
+  try {
+    const { filterType, startDate, endDate } = req.query;
+
+    if (!filterType) {
+      return res.status(400).json({
+        success: false,
+        message: "filterType parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // Always send FilterType
+    request.input("FilterType", sql.Int, parseInt(filterType));
+
+    // When FilterType = 5, pass StartDate & EndDate
+    if (parseInt(filterType) === 5) {
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          success: false,
+          message: "StartDate & EndDate required when FilterType = 5",
+        });
+      }
+
+      request.input("StartDate", sql.Date, startDate);
+      request.input("EndDate", sql.Date, endDate);
+    } else {
+      request.input("StartDate", sql.Date, null);
+      request.input("EndDate", sql.Date, null);
+    }
+
+    const result = await request.execute("Dashboard_MouldHC_PlannedVsActual");
+
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+
+  } catch (error) {
+    console.error("Error fetching HC Planned vs Actual:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching HC Planned vs Actual",
+      error: error.message,
+    });
+  }
+});
+
 //-----------HC Monitoring table
 
 router.get("/mouldHCStatus", async (req, res) => {
