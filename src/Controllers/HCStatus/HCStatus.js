@@ -85,6 +85,29 @@ router.get("/MouldWiseHCPlan", async (req, res) => {
   }
 });
 
+// GET → Next 6 Months HC Plan
+router.get("/DashboardNext6MonthHCPlan", async (req, res) => {
+  try {
+    const pool = await sql.connect();
+
+    // Execute the stored procedure
+    const result = await pool.request().execute("Dashboard_Next6MonthHCPlan");
+
+    return res.json({
+      success: true,
+      data: result.recordset,
+    });
+
+  } catch (error) {
+    console.error("Error fetching Dashboard_Next6MonthHCPlan:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching next 6 months HC Plan",
+      error: error.message,
+    });
+  }
+});
+
 //Mouldwise Next HC Due Date
 router.get("/MouldWiseNextHCDuedate", async (req, res) => {
   try {
