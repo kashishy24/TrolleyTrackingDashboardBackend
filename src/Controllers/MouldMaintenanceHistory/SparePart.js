@@ -78,4 +78,93 @@ router.get("/SparePartName", async (req, res) => {
   }
 });
 
+
+// GET Spare Part Consumption By Category (Custom Date)
+router.get("/DashboardSpareConsumptionByCategory", async (req, res) => {
+  try {
+    const { startDate, endDate, sparePartCategoryID } = req.query;
+
+    // ----------- VALIDATION -----------
+    if (!startDate || !endDate || !sparePartCategoryID) {
+      return res.status(400).json({
+        success: false,
+        message: "startDate, endDate, and sparePartCategoryID are required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // ----------- INPUT PARAMETERS -----------
+    request.input("StartDate", sql.Date, startDate);
+    request.input("EndDate", sql.Date, endDate);
+    request.input("SparePartCategoryID", sql.Int, sparePartCategoryID);
+
+    // ----------- EXECUTE STORED PROCEDURE -----------
+    const result = await request.execute(
+      "DASHBOARD_SparePartConsumptionByCategoryCustomedate"
+    );
+
+    return res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching DASHBOARD_SparePartConsumptionByCategoryCustomedate:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Spare Part Consumption (Category-wise)",
+      error: error.message,
+    });
+  }
+});
+
+// GET Top 50 Spare Part Consumption (Custom Date Range)
+router.get("/DashboardTop50SpareConsumption", async (req, res) => {
+  try {
+    const { startDate, endDate, sparePartCategoryID } = req.query;
+
+    // ------------------ Validation ------------------
+    if (!startDate || !endDate || !sparePartCategoryID) {
+      return res.status(400).json({
+        success: false,
+        message: "startDate, endDate, and sparePartCategoryID are required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // ------------------ Input Parameters ------------------
+    request.input("StartDate", sql.Date, startDate);
+    request.input("EndDate", sql.Date, endDate);
+    request.input("SparePartCategoryID", sql.Int, sparePartCategoryID);
+
+    // ------------------ Execute Stored Procedure ------------------
+    const result = await request.execute(
+      "DASHBOARD_Top50SparePartConsumptionCustomDate"
+    );
+
+    return res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching Top 50 Spare Part Consumption:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Top 50 Spare Part Consumption",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router; 

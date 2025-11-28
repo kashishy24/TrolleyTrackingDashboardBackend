@@ -78,4 +78,224 @@ router.get("/MouldIDDesc", async (req, res) => {
   }
 });
 
+
+//get the mould summary data
+// GET: /api/mouldPMHCOverview?mouldId=2
+router.get("/mouldPMHCOverview", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    // Validate input
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // Input parameter for the stored procedure
+    request.input("MouldID", sql.NVarChar(100), mouldId);
+
+    // Execute the stored procedure
+    const result = await request.execute("Dashboard_Mould_PM_HC_Overview");
+
+    // SP returns a single row; we can send recordset[0]
+    const row = result.recordset && result.recordset[0] ? result.recordset[0] : null;
+
+    return res.json({
+      success: true,
+      data: row,
+    });
+  } catch (error) {
+    console.error("Error fetching Mould PM/HC Overview:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Mould PM/HC Overview",
+      error: error.message,
+    });
+  }
+});
+
+//On time and delay PM 
+
+// Get PM On-Time vs Delayed status for a given mould
+router.get("/Dashboard_PM_OnTimeVsDelayed", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    // Validate
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // Pass stored procedure parameter
+    request.input("MouldID", sql.NVarChar(50), mouldId);
+
+    // Execute your SP
+    const result = await request.execute("Dashboard_PM_OnTimeVsDelayed");
+
+    return res.json({
+      success: true,
+      data: result.recordset, // returns array of months with status
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard_PM_OnTimeVsDelayed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Dashboard PM OnTime vs Delayed details",
+      error: error.message,
+    });
+  }
+});
+
+
+//get on time delay for hc
+
+// Get PM On-Time vs Delayed status for a given mould
+router.get("/Dashboard_HC_OnTimeVsDelayed", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    // Validate
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    // Pass stored procedure parameter
+    request.input("MouldID", sql.NVarChar(50), mouldId);
+
+    // Execute your SP
+    const result = await request.execute("Dashboard_HC_OnTimeVsDelayed");
+
+    return res.json({
+      success: true,
+      data: result.recordset, // returns array of months with status
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard_HC_OnTimeVsDelayed :", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Dashboard hc OnTime vs Delayed details",
+      error: error.message,
+    });
+  }
+});
+
+//get the breakdown by duration
+router.get("/DashboardGetTop5BreakDownsByDuration", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    request.input("MouldID", sql.NVarChar(100), mouldId);
+
+    const result = await request.execute("Dashboard_GetTop5BreakDowns_ByDuration");
+
+    return res.json({
+      success: true,
+      data: result.recordset,   // 👈 return ALL 5 rows
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard_GetTop5BreakDowns_ByDuration:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Mould breakdown duration Overview",
+      error: error.message,
+    });
+  }
+});
+
+//get the breakdown by ocuurence
+router.get("/DashboardGetTop5BreakDownsByOccurrences", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    request.input("MouldID", sql.NVarChar(100), mouldId);
+
+    const result = await request.execute("Dashboard_GetTop5BreakDowns_ByOccurrences");
+
+    return res.json({
+      success: true,
+      data: result.recordset,  // ✅ return full array (all 5)
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard_GetTop5BreakDowns_ByOccurrences:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching Mould breakdown occurrence overview",
+      error: error.message,
+    });
+  }
+});
+
+//get the top 10 spare part name
+router.get("/Dashboard_GetTop10SpareParts_ByMould", async (req, res) => {
+  try {
+    const { mouldId } = req.query;
+
+    if (!mouldId) {
+      return res.status(400).json({
+        success: false,
+        message: "mouldId query parameter is required",
+      });
+    }
+
+    const pool = await sql.connect();
+    const request = pool.request();
+
+    request.input("MouldID", sql.NVarChar(100), mouldId);
+
+    const result = await request.execute("Dashboard_GetTop10SpareParts_ByMould");
+
+    return res.json({
+      success: true,
+      data: result.recordset,  // ✅ return full array (all 5)
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard_GetTop10SpareParts_ByMould:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching MDashboard_GetTop10SpareParts_ByMould overview",
+      error: error.message,
+    });
+  }
+});
+
+
+
+
 module.exports = router; 
