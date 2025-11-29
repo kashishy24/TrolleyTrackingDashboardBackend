@@ -11,6 +11,7 @@ const SparePartRoute=require("./src/Controllers/MouldMaintenanceHistory/SparePar
 const pmStatusRoute=require("./src/Controllers/PM Status/PMStatus.js")
 const hcStatusRoute=require("./src/Controllers/HCStatus/HCStatus.js")
 const MouldSummary=require("./src/Controllers/Mould Summary/MouldSummary.js")
+const ParameterRoute=require("./src/Controllers/Parameter/Parameter.js")
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/MouldMaintenanceHistorySparePart",SparePartRoute );
 app.use("/api/PMStatus",pmStatusRoute );
 app.use("/api/HCStatus",hcStatusRoute );
 app.use("/api/MouldSummary",MouldSummary );
+app.use("/api/MachineParameter",ParameterRoute );
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
