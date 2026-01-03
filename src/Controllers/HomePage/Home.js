@@ -99,7 +99,33 @@ router.get("/TrolleyTotalDuplicateWrongMovement", async (req, res) => {
   }
 });
 
-//
+/* -------------------------------------------------
+   2. ERROR MOVEMENT SOURCE → DESTINATION
+--------------------------------------------------*/
+router.get("/wrong-duplicate-movement/today", async (req, res) => {
+  try {
+    const request = new sql.Request();
+
+    const result = await request.execute(
+      "SP_Dashboard_WrongDuplicateMovement_SourceDestination_Today"
+    );
+
+    middlewares.standardResponse(
+      res,
+      result.recordset,
+      200,
+      "success"
+    );
+  } catch (error) {
+    console.error("Today Wrong/Duplicate Movement error:", error);
+    middlewares.standardResponse(
+      res,
+      null,
+      500,
+      "Error fetching today wrong & duplicate movement data"
+    );
+  }
+});
 // ---------------- Total duplicate and wrong Movement (Location Wise) chart ----------------
 router.get("/TrolleyDupWrongMovementLocationWise", async (req, res) => {
   try {
