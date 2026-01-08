@@ -21,7 +21,7 @@ router.post('/TrolleyHistory', async (req, res) => {
       .input('TrolleyID', sql.NVarChar, trolleyId)
       .input('StartDate', sql.DateTime, startDate)
       .input('EndDate', sql.DateTime, endDate)
-      .execute('SP_GetTrolleyHistory');
+      .execute('SP_Dashboard_GetTrolleyHistory');
 
     res.status(200).json({
       success: true,

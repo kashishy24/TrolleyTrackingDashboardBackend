@@ -4,7 +4,7 @@ const rateLimit = require("express-rate-limit");  //  add this
 const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
 const HomeRoute=require("./src/Controllers/HomePage/Home.js")
-
+const TrolleyHistoryRoute = require("./src/Controllers/TrolleyHistory/TrolleyHistory.js")
 const app = express();
 
 
@@ -17,14 +17,13 @@ app.use(cors({
 }));
 
 //app.use(limiter);   
-
-// app.use("/api", limiter);
+  // app.use("/api", limiter);
 app.use(express.json());
 
 app.use("/api/login", loginRoute);
 
  app.use("/api/Home",HomeRoute );
-
+app.use("/api/TrolleyHistory",TrolleyHistoryRoute)
 
 const PORT = process.env.PORT || 3007;
 app.listen(PORT, () => {
