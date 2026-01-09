@@ -5,6 +5,8 @@ const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
 const HomeRoute=require("./src/Controllers/HomePage/Home.js")
 const TrolleyHistoryRoute = require("./src/Controllers/TrolleyHistory/TrolleyHistory.js")
+const pmstatusRoute = require("./src/Controllers/PMstatus/PMstatus.js")
+const BreakdownRoute = require("./src/Controllers/Breakdown/breakDown.js")
 const app = express();
 
 
@@ -24,6 +26,8 @@ app.use("/api/login", loginRoute);
 
  app.use("/api/Home",HomeRoute );
 app.use("/api/TrolleyHistory",TrolleyHistoryRoute)
+app.use("/api/trolleypmstatus",pmstatusRoute)
+app.use("/api/Breakdown", BreakdownRoute);
 
 const PORT = process.env.PORT || 3007;
 app.listen(PORT, () => {
