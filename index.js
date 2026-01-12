@@ -7,6 +7,7 @@ const HomeRoute=require("./src/Controllers/HomePage/Home.js")
 const TrolleyHistoryRoute = require("./src/Controllers/TrolleyHistory/TrolleyHistory.js")
 const pmstatusRoute = require("./src/Controllers/PMstatus/PMstatus.js")
 const BreakdownRoute = require("./src/Controllers/Breakdown/breakDown.js")
+const PMHistoryRoute =require("./src/Controllers/PmHistory/PMHistory.js")
 const app = express();
 
 
@@ -28,7 +29,7 @@ app.use("/api/login", loginRoute);
 app.use("/api/TrolleyHistory",TrolleyHistoryRoute)
 app.use("/api/trolleypmstatus",pmstatusRoute)
 app.use("/api/Breakdown", BreakdownRoute);
-
+app.use("/api/PMHistory", PMHistoryRoute);
 const PORT = process.env.PORT || 3007;
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
