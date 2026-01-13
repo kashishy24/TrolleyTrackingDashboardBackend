@@ -36,6 +36,40 @@ router.get("/TrolleyTotalDuplicateWrongMovement", async (req, res) => {
   }
 });
 
+//Error Movement with its source and destination
+router.get("/wrong-duplicate-movement", async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({
+                success: false,
+                message: "startDate and endDate are required"
+            });
+        }
+
+        const pool = await sql.connect(dbConfig);
+
+        const result = await pool.request()
+            .input("StartDate", sql.Date, startDate)
+            .input("EndDate", sql.Date, endDate)
+            .execute("SP_Dashboard_WrongDuplicateMovement_SourceDestination1");
+
+        res.status(200).json({
+            success: true,
+            data: result.recordset
+        });
+
+    } catch (error) {
+        console.error("SP Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+});
+
 // Duplicate & Wrong Movement Location Wise API
 router.get("/TrolleyDuplicateWrongMovement", async (req, res) => {
   try {
