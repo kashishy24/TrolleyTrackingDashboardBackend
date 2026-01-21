@@ -44,10 +44,10 @@ router.get("/TrolleyPMScheduleSummary", async (req, res) => {
     );
 
     const data = {
-      day: result.recordsets[0][0].DayCount,
-      week: result.recordsets[0][0].WeekCount,
-      month: result.recordsets[0][0].MonthCount,
-      year: result.recordsets[0][0].YearCount,
+      day: result.recordsets[0][0].DayPlanQty,
+      week: result.recordsets[0][0].WeekPlanQty,
+      month: result.recordsets[0][0].MonthPlanQty,
+      year: result.recordsets[0][0].YearPlanQty,
     };
 
     middlewares.standardResponse(res, data, 200, "success");
