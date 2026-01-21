@@ -64,26 +64,52 @@ router.get("/TrolleyPMScheduleSummary", async (req, res) => {
 
 //
 
-// PM Details Table API (Date Range)
+// // PM Details Table API (Date Range)
+// router.get("/TrolleyPMDetails", async (req, res) => {
+//   try {
+//     const { startDate, endDate } = req.query;
+
+//     if (!startDate || !endDate) {
+//       return middlewares.standardResponse(
+//         res,
+//         null,
+//         400,
+//         "startDate and endDate are required"
+//       );
+//     }
+
+//     const sqlRequest = new sql.Request();
+//     sqlRequest.input("StartDate", sql.Date, startDate);
+//     sqlRequest.input("EndDate", sql.Date, endDate);
+
+//     const result = await sqlRequest.execute(
+//       "SP_Dashboard_PMDetails_ByDateRange"
+//     );
+
+//     middlewares.standardResponse(
+//       res,
+//       result.recordset,
+//       200,
+//       "success"
+//     );
+//   } catch (err) {
+//     console.error("PM Details error:", err);
+//     middlewares.standardResponse(
+//       res,
+//       null,
+//       300,
+//       "Error fetching PM details"
+//     );
+//   }
+// });
+
+// PM Details Table API (Current Month)
 router.get("/TrolleyPMDetails", async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-      return middlewares.standardResponse(
-        res,
-        null,
-        400,
-        "startDate and endDate are required"
-      );
-    }
-
     const sqlRequest = new sql.Request();
-    sqlRequest.input("StartDate", sql.Date, startDate);
-    sqlRequest.input("EndDate", sql.Date, endDate);
 
     const result = await sqlRequest.execute(
-      "SP_Dashboard_PMDetails_ByDateRange"
+      "SP_Dashboard_PMDetails"
     );
 
     middlewares.standardResponse(
@@ -102,4 +128,5 @@ router.get("/TrolleyPMDetails", async (req, res) => {
     );
   }
 });
+
 module.exports = router;
