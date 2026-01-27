@@ -34,7 +34,7 @@ router.get("/TrolleypmStatus", async (req, res) => {
 
 //schudle summary
 
-// PM Schedule Summary API
+// PM Schedule Summary for getting plan qty API
 router.get("/TrolleyPMScheduleSummary", async (req, res) => {
   try {
     const sqlRequest = new sql.Request();
@@ -62,7 +62,34 @@ router.get("/TrolleyPMScheduleSummary", async (req, res) => {
   }
 });
 
-//
+//actual count 
+router.get("/TrolleyPMActualSummary", async (req, res) => {
+  try {
+    const sqlRequest = new sql.Request();
+
+    const result = await sqlRequest.execute(
+      "SP_Dashboard_PMActualSummary"
+    );
+
+    const data = {
+      day: result.recordsets[0][0].DayActualQty,
+      week: result.recordsets[0][0].WeekActualQty,
+      month: result.recordsets[0][0].MonthActualQty,
+      year: result.recordsets[0][0].YearActualQty,
+    };
+
+    middlewares.standardResponse(res, data, 200, "success");
+  } catch (err) {
+    console.error("PM Actual summary error:", err);
+    middlewares.standardResponse(
+      res,
+      null,
+      300,
+      "Error fetching PM actual summary"
+    );
+  }
+});
+
 
 // // PM Details Table API (Date Range)
 // router.get("/TrolleyPMDetails", async (req, res) => {
